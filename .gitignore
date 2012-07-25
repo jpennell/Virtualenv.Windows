@@ -5,5 +5,12 @@ obj
 # mstest test results
 TestResults
 
+# User specific config
 *.suo
+*.user
+
+# Nuget packages
 packages
+
+# Project
+Compressed
