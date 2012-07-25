@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Ionic.Zip;
 using System.IO;
+using System.Diagnostics;
 
 namespace WpfApplication
 {
@@ -41,6 +42,24 @@ namespace WpfApplication
         /// - The final path that the python folder will be after being extracted
         /// </summary>
         private static readonly string PythonExtractedPath = string.Format(@"{0}\Python", MainWindow.PythonUnpackDirectory);
+
+        /// <summary>
+        /// Virtualenv Path
+        /// - Used to create virtual environments
+        /// </summary>
+        private static readonly string VirtualenvPath = @"Scripts\virtualenv.py";
+
+        /// <summary>
+        /// Virtualenv Path
+        /// - Used to create virtual environments
+        /// </summary>
+        private static readonly string GlobalVirtualenvDirectory = @"Env\Global";
+
+        /// <summary>
+        /// Virtualenv Path
+        /// - Used to create virtual environments
+        /// </summary>
+        private static readonly string BaseVirtualenvPath = string.Format(@"{0}\Base", MainWindow.GlobalVirtualenvDirectory);
 
         #endregion
 
@@ -75,6 +94,18 @@ namespace WpfApplication
                 //Python has already been extracted,
                 //Do nothing
             }
+
+            //Check if base environment has been set up
+            if (!Directory.Exists(MainWindow.BaseVirtualenvPath))
+            {
+                //Base environment is not set up, le's do that
+                this.CreateBaseEnvironment();
+            }
+            else
+            {
+                //Base environment is already set up,
+                //Do nothing
+            }
         }
 
         /// <summary>
@@ -88,6 +119,41 @@ namespace WpfApplication
                 {
                     entry.Extract(MainWindow.PythonUnpackDirectory, ExtractExistingFileAction.OverwriteSilently);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Create Base Environment
+        /// </summary>
+        private void CreateBaseEnvironment()
+        {
+            //Make sure directories exist
+            if (!Directory.Exists(@"Env"))
+            {
+                Directory.CreateDirectory(@"Env");
+            }
+
+            if (!Directory.Exists(@"Env\Global"))
+            {
+                Directory.CreateDirectory(@"Env\Global");
+            }
+
+            var startInfo = new ProcessStartInfo() {
+                UseShellExecute = true,
+                //FileName = string.Format(@"{0}\python.exe {1} {2} --distribute", MainWindow.PythonExtractedPath, MainWindow.VirtualenvPath, BaseVirtualenvPath),
+                FileName = @"Scripts\Python\python.exe Scripts\virtualenv.py",
+            };
+
+            try
+            {
+                var process = new Process()
+                {
+                    StartInfo = startInfo,
+                }.Start();
+            }
+            catch
+            {
+
             }
         }
 
