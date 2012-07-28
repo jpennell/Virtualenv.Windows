@@ -92,6 +92,14 @@ namespace WpfApplication
             this.OpenPythonShell();
         }
 
+        /// <summary>
+        /// Open Shell
+        /// </summary>
+        private void btnOpenShell_Click(object sender, RoutedEventArgs e)
+        {
+            this.OpenShell();
+        }
+
         #endregion
 
         #region Methods
@@ -190,6 +198,23 @@ namespace WpfApplication
             new Process() { StartInfo = startInfo, }.Start();
         }
 
+        /// <summary>
+        /// Open Shell
+        /// </summary>
+        private void OpenShell()
+        {
+            var path = System.IO.Path.GetFullPath(MainWindow.BaseVirtualenvPath);
+
+            var startInfo = new ProcessStartInfo()
+            {
+                FileName = "cmd.exe",
+                Arguments = string.Format(@"/K Scripts\Batch\Shell.bat {0}", path),
+            };
+
+            new Process() { StartInfo = startInfo, }.Start();
+        }
+
         #endregion
+        
     }
 }
