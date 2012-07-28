@@ -170,7 +170,6 @@ namespace WpfApplication
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                RedirectStandardInput = true,
                 FileName = string.Format(@"{0}", MainWindow.PythonPath),
                 Arguments = string.Format(@"{0} {1}", MainWindow.VirtualenvPath, MainWindow.BaseVirtualenvPath),
             };
