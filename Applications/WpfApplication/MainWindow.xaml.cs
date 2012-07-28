@@ -44,6 +44,12 @@ namespace WpfApplication
         private static readonly string PythonExtractedPath = string.Format(@"{0}\Python", MainWindow.PythonUnpackDirectory);
 
         /// <summary>
+        /// Python Path
+        /// - Path to python.exe
+        /// </summary>
+        private static readonly string PythonPath = string.Format(@"{0}\python.exe", MainWindow.PythonExtractedPath);
+
+        /// <summary>
         /// Virtualenv Path
         /// - Used to create virtual environments
         /// </summary>
@@ -53,7 +59,7 @@ namespace WpfApplication
         /// Virtualenv Path
         /// - Used to create virtual environments
         /// </summary>
-        private static readonly string GlobalVirtualenvDirectory = @"Env\Global";
+        private static readonly string GlobalVirtualenvDirectory = @"Global\Env";
 
         /// <summary>
         /// Virtualenv Path
@@ -72,6 +78,18 @@ namespace WpfApplication
         {
             InitializeComponent();
             this.StartupCheck();
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        /// <summary>
+        /// Open Python Shell
+        /// </summary>
+        private void btnOpenPythonShell_Click(object sender, RoutedEventArgs e)
+        {
+            this.OpenPythonShell();
         }
 
         #endregion
@@ -127,34 +145,49 @@ namespace WpfApplication
         /// </summary>
         private void CreateBaseEnvironment()
         {
-            //Make sure directories exist
-            if (!Directory.Exists(@"Env"))
+            //Create Global and Global\Env directory
+            if (!Directory.Exists(@"Global"))
             {
-                Directory.CreateDirectory(@"Env");
+                Directory.CreateDirectory(@"Global");
             }
 
-            if (!Directory.Exists(@"Env\Global"))
+            if (!Directory.Exists(@"Global\Env"))
             {
-                Directory.CreateDirectory(@"Env\Global");
+                Directory.CreateDirectory(@"Global\Env");
             }
 
+            //Set up create base environment process
             var startInfo = new ProcessStartInfo() {
-                UseShellExecute = true,
-                //FileName = string.Format(@"{0}\python.exe {1} {2} --distribute", MainWindow.PythonExtractedPath, MainWindow.VirtualenvPath, BaseVirtualenvPath),
-                FileName = @"Scripts\Python\python.exe Scripts\virtualenv.py",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                FileName = string.Format(@"{0}", MainWindow.PythonPath),
+                Arguments = string.Format(@"{0} {1}", MainWindow.VirtualenvPath, MainWindow.BaseVirtualenvPath),
             };
 
-            try
-            {
-                var process = new Process()
-                {
-                    StartInfo = startInfo,
-                }.Start();
-            }
-            catch
-            {
+            //Start and wait for the process to end
+            var process = new Process() { StartInfo = startInfo, };
 
-            }
+            process.Start();
+            process.WaitForExit();
+        }
+
+        /// <summary>
+        /// Open Python Shell
+        /// </summary>
+        private void OpenPythonShell()
+        {
+            var path = System.IO.Path.GetFullPath(MainWindow.BaseVirtualenvPath);
+
+            var startInfo = new ProcessStartInfo()
+            {
+                FileName = @"Scripts\Batch\PythonShell.bat",
+                Arguments = path,
+            };
+
+            new Process() { StartInfo = startInfo, }.Start();
         }
 
         #endregion
